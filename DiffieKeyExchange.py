@@ -13,10 +13,11 @@ First I calculated the bit length of 10000000 and 1000000000 respectively(10mill
 
 import random
 import secrets
-'''
+
 UserInput = input("")
 UserInput = int(UserInput)
-'''
+
+#Use Fermat tester
 def Fermat_Tester(n):
     if n < 3:
         return False
@@ -25,9 +26,7 @@ def Fermat_Tester(n):
         if pow(a,n-1,n) != 1:
             return False
         return True
-
-
-
+#Function for finding a safe prime had to use divmod because when its not a safe prime we get floating points
 def Safe_Prime(Prime):
     q,r = divmod((Prime - 1),2)
     qresullt = Fermat_Tester(q)
@@ -36,13 +35,7 @@ def Safe_Prime(Prime):
     else:
         return False, q
 
-def Odd(n):
-    num,r = divmod(n,2)
-    if r == 0:
-        return False
-    else:
-        return True
-
+#Square and multiply algorithm I realized is pretty much the same as what python uses for their built in pow(b,e,m) function
 def SquareAndMultiply(base,exponent,modulus):
     tempe = exponent
     tempb = base
@@ -56,36 +49,37 @@ def SquareAndMultiply(base,exponent,modulus):
             tempe = tempe - 1
     return result
 
+#To find the generator we check to see that
+def GeneratorFinder(p,q):
+    g2 = 1
+    gq = 1
+    while g2 == 1 and gq == 1:
+        g = secrets.randbelow(p)
+        g2 = SquareAndMultiply(g, 2, p)
+        gq = SquareAndMultiply(g, q, p)
+        if g2 != 1 and gq != 1:
+            return g
+        g2 = 1
+        gq = 1
 
+def GeneratePandQandG(int):
+    PP = secrets.randbits(int)
+    presult = Fermat_Tester(PP)
+    N = 0
+    while not presult:
 
+        PP = secrets.randbits(int)
+        presult = Fermat_Tester(PP)
+        if presult:
+            qresult, N = Safe_Prime(PP)
+            if qresult == False:
+                presult = False
+    g = GeneratorFinder(PP,N)
+    return g, PP, N
 
+generator,Prime,Safeprime = GeneratePandQandG(UserInput)
 
-
-
-g2 = 1
-gq = 1
-while g2 == 1 and gq == 1:
-    c = secrets.randbelow(61866083)
-    g2 = SquareAndMultiply(c,30933041,61866083)
-    gq = SquareAndMultiply(c,30933041,61866083)
-    if g2 != 1 and gq != 1:
-        print(c)
-'''
-#def generator(g,p,q):
-    
-getbits = secrets.randbits(29)
-presult = Fermat_Tester(getbits)
-
-while not presult:
-
-    getbits = secrets.randbits(29)
-    presult = Fermat_Tester(getbits)
-    if presult:
-        qresult, N = Safe_Prime(getbits)
-        if qresult == False:
-            presult = False
-print(getbits)
-print(qresult)
-print(presult)
-print(N)
-'''
+print("We found a random integer of "+str(UserInput)+" bits.")
+print("We found a random Safe Prime P which is "+str(Prime)+".")
+print("We found a the smaller prime to be "+str(Safeprime)+".")
+print("We found a the Generator is "+str(generator)+".")
